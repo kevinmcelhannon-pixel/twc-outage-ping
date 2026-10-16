@@ -1,0 +1,19 @@
+# GitHub pauses scheduled workflows in public repos after 60 days with no
+# commits. This makes an empty commit once a month so the ping keeps running.
+name: Keepalive
+on:
+  schedule:
+    - cron: '0 15 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "keepalive"
+          git config user.email "keepalive@users.noreply.github.com"
+          git commit --allow-empty -m "keepalive"
+          git push

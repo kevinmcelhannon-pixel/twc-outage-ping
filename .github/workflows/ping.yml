@@ -1,0 +1,18 @@
+# Calls the TWC outage monitor about every 15 minutes. All the logic (and the
+# student list) lives in the private Vercel app "twc-reminders"; this only rings
+# the doorbell. The key is a GitHub secret, never in this file.
+name: Ping outage monitor
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check Moodle
+        run: |
+          curl -fsS --max-time 90 \
+            -H "x-outage-key: ${{ secrets.OUTAGE_KEY }}" \
+            https://twc-reminders.vercel.app/api/outage
